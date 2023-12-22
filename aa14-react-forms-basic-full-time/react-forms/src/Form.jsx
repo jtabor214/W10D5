@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import './index.css';
 
 export default function Form() {
 
@@ -10,6 +10,7 @@ export default function Form() {
   const [staff, setStaff] = useState('');
   const [bio, setBio] = useState('');
   const [emailNotifs, setEmailNotifs] = useState(false);
+  const [errorMessages, setErrorMessages] = useState({});
 
   function handleChange(field) {
     return (event) => {
@@ -50,31 +51,80 @@ export default function Form() {
   }
 
   function validate() {
-    let validationErrors = [];
-    if (name.length === 0 || email.length === 0) {
-      validationErrors.push('you must have a name and email.');
+    let validationErrors = {};
+
+    if (name.length === 0 ) {
+      validationErrors["name"]='you must have a name.';
     }
-    if (phoneNum.length != 0  && phoneType.length ===0) {
-      validationErrors.push('you must phone type.');
+
+    if (email.length === 0) {
+      validationErrors["email"]='you must have an email.';
     }
+
+    if ((phoneNum.length === 0) !== (phoneType.length === 0)) {
+      validationErrors["phoneType"]='you must have a phone number selected.';
+    }
+
+    if (bio.length > 280){
+      validationErrors["bio"]='character limit is 280.';
+    }
+
+    console.log(validationErrors);
+    return validationErrors;
 
   }
 
   function handleSubmit(event) {
     event.preventDefault();
-    // let
-    console.log(name, email, phoneNum, phoneType, staff, bio, emailNotifs);
+    let errors = validate();
+
+    if (Object.entries(errors).length){
+      setErrorMessages(errors);
+    } else {
+      let user = {
+        name,
+        email,
+        phoneNum,
+        phoneType,
+        bio,
+      };
+      console.log(user);
+      setErrorMessages({});
+    }
+    // console.log(errors);
+    // console.log(errorMessages);
   }
 
+  const showErrors = () => {
+
+
+  };
+    // if (!errorMessages.length) {
+    //   return null;
+    // } else {
+    //   return(
+    //     <ul>
+    //       {errorMessages.map((error, idx) => {
+    //         return (<li key={idx}>{error}</li>);
+    //       })}
+    //     </ul>
+    //   );
+    // }
+  
+
   return (
+    <>
+    {showErrors()}
     <form onSubmit={handleSubmit}>
       <label htmlFor='name'>Name
         <input type="text" value={name} onChange={handleChange('name')} id="name"/>
       </label>
+      <p>{errorMessages["name"]}</p>
       <br />
       <label htmlFor='email'>Email
         <input type="email" value={email} onChange={handleChange('email')} id="email"/>
       </label>
+      <p>{errorMessages["email"]}</p>
       <br />
       <label htmlFor='phone-number'>Phone Number
         <input type="tel" value={phoneNum} onChange={handleChange('phoneNum')} id="phone-number"/>
@@ -87,6 +137,7 @@ export default function Form() {
         <option value="work">Work</option>
         <option value="mobile">Mobile</option>
       </select>
+      <p>{errorMessages["phoneType"]}</p>
       <br />
       <label htmlFor="staff">Staff?
         <br/>
@@ -99,6 +150,7 @@ export default function Form() {
       <label htmlFor="bio">Bio
         <input type="text" id="bio-field" value={bio} onChange={handleChange('bio')}/>
       </label>
+      <p>{errorMessages["bio"]}</p>
       <br />
       <label htmlFor="email-notifs">Email Notificaitons
         <input type="checkbox" onChange={handleChange('emailNotifs')} checked={(emailNotifs) ? true : false}/>
@@ -108,6 +160,7 @@ export default function Form() {
         <button value="Submit">Submit Form</button>
       </label>
     </form>
+    </>
   );
 }
 
