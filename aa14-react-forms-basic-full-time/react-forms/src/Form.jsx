@@ -49,6 +49,17 @@ export default function Form() {
     };
   }
 
+  function validate() {
+    let validationErrors = [];
+    if (name.length === 0 || email.length === 0) {
+      validationErrors.push('you must have a name and email.');
+    }
+    if (phoneNum.length != 0  && phoneType.length ===0) {
+      validationErrors.push('you must phone type.');
+    }
+
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
     // let
